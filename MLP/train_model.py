@@ -67,4 +67,4 @@ class DataModelProcessing:
         return metrics
 
     def save_model(self, model_filename):
-        self.model.save(model_filename)
+        self.model.save_weights(model_filename)

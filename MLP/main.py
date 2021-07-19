@@ -29,11 +29,10 @@ def plot_model(log_history):
     plt.show()
 
 
-
 if __name__ == '__main__':
     processing = DataModelProcessing('Data Fan Humidifier.csv')
     train, test = processing.split_data()
     processing.create_feature_layers(train)
     history = processing.train_model()
-    processing.save_model('model')
+    processing.save_model('./Weight/my_weight')
     plot_model(history)
