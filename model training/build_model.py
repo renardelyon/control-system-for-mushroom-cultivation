@@ -4,6 +4,7 @@ import tensorflow as tf
 
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import layers
+from tensorflow.keras.regularizers import L2
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 
 
@@ -18,37 +19,50 @@ class DataModelProcessing:
         self.csv_path = csv_path
         self.feature_names = feature_names
         self.label_names = label_names
-        self.features = {}
-        self.labels = {}
+        self.train_features = {}
+        self.train_labels = {}
+        self.val_features = {}
+        self.val_labels = {}
         self.feature_layers = None
         self.model = None
 
-    def split_data(self, test_size=0.15):
+    def split_data(self, val_size=0.1, test_size=0.5):
         df = pd.read_csv(self.csv_path, delimiter=';')
-        train, test = train_test_split(df, test_size=test_size)
-        return train, test
+        train, val = train_test_split(df, test_size=val_size)
+        val, test = train_test_split(df, test_size=test_size)
+        return train, val, test
 
-    def create_feature_layers(self, train):
-        self.features = {name: np.array(value) for name, value in train.items()}
-        self.labels = {name: self.features.pop(name) for name in self.label_names}
+    def feature_label(self, train, val):
+        self.train_features = {name: np.array(value) for name, value in train.items()}
+        self.train_labels = {name: self.train_features.pop(name) for name in self.label_names}
 
+        self.val_features = {name: np.array(value) for name, value in val.items()}
+        self.val_labels = {name: self.val_features.pop(name) for name in self.label_names}
+
+        return "feature and label for training has been created"
+
+    def create_feature_layers(self):
         feature_columns = [tf.feature_column.numeric_column(name,
-                                                            normalizer_fn=lambda x: (x - self.features[name].mean()) /
-                                                                                    self.features[name].std())
+                                                            normalizer_fn=lambda x: (x - self.train_features[
+                                                                name].mean()) /
+                                                            self.train_features[name].std())
                            for name in self.feature_names]
 
         self.feature_layers = layers.DenseFeatures(feature_columns)
         return 'feature layers had been created'
 
-    def train_model(self):
+    def train_model(self, epochs):
         inputs = {name: tf.keras.Input(shape=(1,), name=name)
                   for name in self.feature_names}
         x = self.feature_layers(inputs)
-        x = layers.Dense(32, activation='relu', )(x)
+        x = layers.Dense(64, activation='relu', kernel_regularizer=L2(0.1))(x)
+        x = layers.Dense(32, activation='relu')(x)
 
         fan_preds = layers.Dense(2, activation='softmax', name='Fan')(x)
         humidifier_preds = layers.Dense(2, activation='softmax', name='Humidifier')(x)
         self.model = tf.keras.Model(dict(inputs), [fan_preds, humidifier_preds])
+
+        callbacks = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=10, verbose=1)
 
         self.model.compile(optimizer='adam',
                            loss={
@@ -56,8 +70,9 @@ class DataModelProcessing:
                                'Humidifier': SparseCategoricalCrossentropy()
                            },
                            metrics=['accuracy'])
-        history = self.model.fit(x=self.features, y=self.labels,
-                                 epochs=20, batch_size=5)
+        history = self.model.fit(x=self.train_features, y=self.train_labels,
+                                 validation_data=(self.val_features, self.val_labels),
+                                 epochs=epochs, batch_size=5, callbacks=[callbacks])
         return history
 
     def model_evaluate(self, test):
