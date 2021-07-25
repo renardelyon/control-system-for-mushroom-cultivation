@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from train_model import DataModelProcessing
+from build_model import DataModelProcessing
 
 
 def plot_model(log_history):
