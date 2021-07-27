@@ -1,7 +1,11 @@
 import socket
+
+import numpy as np
 import tqdm
 import os
 import time
+import pandas as pd
+import argparse
 
 from forecasting_train_inference import model_predict, plot_data, model_train
 
@@ -19,7 +23,7 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
 
 
-def receive():
+def receive() -> None:
     received = client.recv(BUFFER_SIZE).decode()
     filename, filesize = received.split(SEPARATOR)
     filename = os.path.basename(filename)
@@ -35,7 +39,7 @@ def receive():
     client.close()
 
 
-def send(msg):
+def send(msg: str) -> None:
     message = msg.encode("utf-8")
     msg_length = len(message)
     send_length = str(msg_length).encode("utf-8")
@@ -44,12 +48,37 @@ def send(msg):
     client.send(message)
 
 
-if __name__ == "__main__":
+def run_send_receive() -> None:
     send("SEND_DATA")
     receive()
     time.sleep(5)
+
+
+def dataframe_to_array(path: str) -> np.ndarray:
+    df = pd.read_csv(path)
+    df = df.dropna()
+    df.drop(columns='Date', inplace=True)
+
+    array_data = df[['Humidity (%)', 'Temp (C)']].to_numpy()
+    return array_data
+
+
+if __name__ == "__main__":
     csv_path = "data.csv"
-    data, predict = model_train(csv_path)
-    data1, data2 = model_predict(data, predict)
-    plot_data(data1, data2)
+    run_send_receive()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--forecast", action="store_true",
+                        help="Forecast the temperature value")
+    args = parser.parse_args()
+
+    if args.forecast:
+        data, predict = model_train(csv_path)
+        data1, data2 = model_predict(data, predict)
+        plot_data(data1, data2)
+    else:
+        data_ = dataframe_to_array(csv_path)
+        plot_data(data1=data_)
+
+
 
