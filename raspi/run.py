@@ -26,8 +26,7 @@ def data_inference(start_time:float) -> None:
 
 if __name__ == "__main__":
 	startTime = time.time()
-	get_inference = GetDataInference(0x8, 0x7, 0x1, 
-										'Data Fan Humidifier.csv')
+	get_inference = GetDataInference(0x8, 0x7, 0x1, 'Data Fan Humidifier.csv')
 	if get_inference.model is None:
 		get_inference.control_model_initialization()
 	
