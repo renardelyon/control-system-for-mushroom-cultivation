@@ -5,6 +5,7 @@ import pandas as pd
 
 from tensorflow.keras import layers
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
+from tensorflow.keras.regularizers import L2
 
 
 def load_model(train, label_names, feature_names):
@@ -21,7 +22,8 @@ def load_model(train, label_names, feature_names):
     inputs = {name: tf.keras.Input(shape=(1,), name=name)
               for name in feature_names}
     x = feature_layers(inputs)
-    x = layers.Dense(32, activation='relu', )(x)
+    x = layers.Dense(64, activation='relu', kernel_regularizer=L2(0.1))(x)
+    x = layers.Dense(32, activation='relu')(x)
 
     fan_preds = layers.Dense(2, activation='softmax', name='Fan')(x)
     humidifier_preds = layers.Dense(2, activation='softmax', name='Humidifier')(x)

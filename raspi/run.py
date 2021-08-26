@@ -1,11 +1,14 @@
 from math import isnan
 from get_data_inference import GetDataInference
 
+import os
 import time
 import datetime
+import concurrent.futures
 
 import tensorflow as tf
 import numpy as np
+
 
 def data_inference(start_time:float) -> None:
 	while True:
@@ -21,14 +24,15 @@ def data_inference(start_time:float) -> None:
 		print("elapsed time:{} prediction:{}".format(delta, get_inference.prediction))
 		
 		get_inference.write_to_arduino(list(get_inference.prediction))
-		time.sleep(60)
+		time.sleep(600)
 	
 
 if __name__ == "__main__":
 	startTime = time.time()
-	get_inference = GetDataInference(0x8, 0x7, 0x1, 'Data Fan Humidifier.csv')
+	get_inference = GetDataInference(0x8, 0x7, 0x1, 'Training Data.csv')
 	if get_inference.model is None:
 		get_inference.control_model_initialization()
+
 	
 	data_inference(startTime)
 	

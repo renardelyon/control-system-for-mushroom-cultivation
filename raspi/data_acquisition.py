@@ -26,11 +26,11 @@ def data_acquisition(start_time:float) -> None:
 							+ str(date) + "," 
 							+ str(humidity) + ","
 							+ str(temp) + "\n")
-		time.sleep(20)
+		time.sleep(1800)
 
 if __name__ == "__main__":
 	get_inference = GetDataInference(0x8, 0x7, 0x1, 
-										'Data Fan Humidifier.csv')
+										'Training Data.csv')
 	startTime = time.time()
 	data_acquisition(startTime)
 	
