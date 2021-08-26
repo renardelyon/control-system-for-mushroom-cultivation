@@ -8,14 +8,15 @@ import tensorflow as tf
 import numpy as np
 
 def data_inference(start_time:float) -> None:
+    """ Predict actuator state based on enviromental physical data that is taken from DHT22 Sensor"""
 	while True:
 		end_time = time.time()
 		delta = end_time - start_time
-		date, humidity, temp = get_inference.request_reading()
+		request = get_inference.request_reading()
 		
-		if not isnan(humidity) and not isnan(temp): 
-			inference_data = {'Temperature': np.array([temp]),
-								'Humidity': np.array([humidity])}
+		if not isnan(request['humidity'][0]) and not isnan(request['temp'][0]): 
+			inference_data = {'Temperature': np.array([request['temp'][0]]),
+								'Humidity': np.array([request['humidity'][0]])}
 			get_inference.inference(inference_data)
 			
 		print("elapsed time:{} prediction:{}".format(delta, get_inference.prediction))
@@ -26,7 +27,7 @@ def data_inference(start_time:float) -> None:
 
 if __name__ == "__main__":
 	startTime = time.time()
-	get_inference = GetDataInference(0x8, 0x7, 0x1, 'Data Fan Humidifier.csv')
+	get_inference = GetDataInference([0x8, 0x9], 0x7, 0x1, 'Data Fan Humidifier.csv')
 	if get_inference.model is None:
 		get_inference.control_model_initialization()
 	

@@ -27,12 +27,14 @@ class DataModelProcessing:
         self.model = None
 
     def split_data(self, val_size=0.1, test_size=0.5):
+        """ split the data to train, validation,and test set """
         df = pd.read_csv(self.csv_path, delimiter=';')
         train, val = train_test_split(df, test_size=val_size)
         val, test = train_test_split(df, test_size=test_size)
         return train, val, test
 
     def feature_label(self, train, val):
+        """ Seperate feature columns and label columns and assign each columns variable to its respective variable """
         self.train_features = {name: np.array(value) for name, value in train.items()}
         self.train_labels = {name: self.train_features.pop(name) for name in self.label_names}
 
@@ -42,6 +44,7 @@ class DataModelProcessing:
         return "feature and label for training has been created"
 
     def create_feature_layers(self):
+        """ normalized feature values using standardization and convert it to dense tensor"""
         feature_columns = [tf.feature_column.numeric_column(name,
                                                             normalizer_fn=lambda x: (x - self.train_features[
                                                                 name].mean()) /
@@ -52,6 +55,7 @@ class DataModelProcessing:
         return 'feature layers had been created'
 
     def train_model(self, epochs):
+        """ Creating model architecture and trained it with synthetic data"""
         inputs = {name: tf.keras.Input(shape=(1,), name=name)
                   for name in self.feature_names}
         x = self.feature_layers(inputs)
@@ -76,10 +80,12 @@ class DataModelProcessing:
         return history
 
     def model_evaluate(self, test):
+        """ Perform the performance metrics evaluation using test set """
         features = {name: np.array(value) for name, value in test.items()}
         labels = {name: features.pop(name) for name in self.label_names}
         metrics = self.model.evaluate(x=features, y=labels, batch_size=5)
         return metrics
 
     def save_model(self, model_filename):
+        """ saved the model weight"""
         self.model.save_weights(model_filename)

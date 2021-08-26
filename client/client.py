@@ -24,6 +24,7 @@ client.connect(ADDR)
 
 
 def receive() -> None:
+    """ receiving file from server"""
     received = client.recv(BUFFER_SIZE).decode()
     filename, filesize = received.split(SEPARATOR)
     filename = os.path.basename(filename)
@@ -40,6 +41,7 @@ def receive() -> None:
 
 
 def send(msg: str) -> None:
+    """ sending string messages to server """
     message = msg.encode("utf-8")
     msg_length = len(message)
     send_length = str(msg_length).encode("utf-8")
@@ -55,6 +57,7 @@ def run_send_receive() -> None:
 
 
 def dataframe_to_array(path: str) -> np.ndarray:
+    """ convert pandas dataframe to numpy array """
     df = pd.read_csv(path)
     df = df.dropna()
     df.drop(columns='Date', inplace=True)

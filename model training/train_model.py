@@ -5,6 +5,7 @@ from build_model import DataModelProcessing
 
 
 def plot_model(log_history):
+    """ function to plot model history (accuracy and loss per epochs) """
     f, ax = plt.subplots(1, 2, figsize=(12, 6))
     _ = f.suptitle('Accuracy and Loss', fontsize=12)
     f.subplots_adjust(top=0.85, wspace=0.3)

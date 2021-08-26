@@ -3,6 +3,7 @@ import tqdm
 import os
 
 PORT = 5050
+# Raspberry Pi IP address
 SERVER = '192.168.43.148'
 HEADER = 64
 BUFFER_SIZE = 4096
@@ -19,7 +20,9 @@ server.bind(ADDR)
 
 
 def handle_client(conn, addr):
+    """ handle incoming request from client"""
     print("[NEW CONNECTION] {} is connected.".format(addr))
+    # receiving 64 bytes of data and decode it
     msg_length = conn.recv(HEADER).decode("utf-8")
     if msg_length:
         msg_length = int(msg_length)
@@ -38,7 +41,7 @@ def handle_client(conn, addr):
                 if not bytes_read:
                     # file transmitting is done
                     break
-                # we use sendall to assure transimission in
+                # use sendall to assure transimission in
                 # busy networks
                 conn.sendall(bytes_read)
                 # update the progress bar

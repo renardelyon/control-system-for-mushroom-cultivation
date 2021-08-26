@@ -3,9 +3,13 @@
 #define SLAVE_ADDRESS 0x7
 
 int data[2];
+
+//digital pin number
 int gate[] = {10, 12};
 
 void receiveData(int bytecount){
+  //Receiving data from master and passed it to
+  //actuatorControl function
   int numOfBytes = Wire.available();
   byte b = Wire.read();
   for(int i=0; i<numOfBytes-1; i++){
@@ -16,6 +20,8 @@ void receiveData(int bytecount){
 }
 
 void actuatorControl(int data, int GATE){
+  //Open or close MOSFET gate based on the data 
+  //that had been sent from Raspberry Pi
   Serial.println(data);
   if(data==0){
     Serial.println("LOW");
@@ -31,6 +37,7 @@ void actuatorControl(int data, int GATE){
 }
 
 void end_program(){
+  //end arduino process if char '!' passed to Serial window
   char ch;
   if(Serial.available()){
     ch = Serial.read();
@@ -41,11 +48,13 @@ void end_program(){
     }
   }
 }
-void setup() {
+
+void setup(){
   Serial.begin(9600);
   
   pinMode(gate[0], OUTPUT);
   pinMode(gate[1], OUTPUT);
+  
   digitalWrite(gate[0], LOW);
   digitalWrite(gate[1], LOW);
 
@@ -53,7 +62,7 @@ void setup() {
   Wire.onReceive(receiveData);
 }
 
-void loop() {
+void loop(){
   delay(100);
   end_program();
 }

@@ -2,12 +2,12 @@ import numpy as np
 import tensorflow as tf
 import pandas as pd
 
-
 from tensorflow.keras import layers
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 
 
 def load_model(train, label_names, feature_names):
+    """ load model architecture """
     features = {name: np.array(value) for name, value in train.items()}
     labels = {name: features.pop(name) for name in label_names}
 
