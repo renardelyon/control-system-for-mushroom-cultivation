@@ -9,9 +9,9 @@ HEADER = 64
 BUFFER_SIZE = 4096
 SEPARATOR = "<SEPARATOR>"
 
-filename = "./data/data.csv"
+#filename = "./data/data.csv"
 # get the file size
-filesize = os.path.getsize(filename)
+#filesize = os.path.getsize(filename)
 
 ADDR = (SERVER, PORT)
 
@@ -26,8 +26,10 @@ def handle_client(conn, addr):
     msg_length = conn.recv(HEADER).decode("utf-8")
     if msg_length:
         msg_length = int(msg_length)
-        msg = conn.recv(msg_length).decode("utf-8")
-
+        
+        filename = conn.recv(msg_length).decode("utf-8")
+        filesize = os.path.getsize(filename)
+        
         print("[{}] {}".format(addr, msg))
 
         conn.send("{}{}{}".format(filename, SEPARATOR, filesize).encode())

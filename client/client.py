@@ -14,9 +14,9 @@ HEADER = 64
 BUFFER_SIZE = 4096
 # the ip address or hostname of the server, the receiver
 SERVER = "192.168.43.148"
-# the port, let's use 5001
+# the port
 PORT = 5050
-# the name of file we want to send, make sure it exists
+
 ADDR = (SERVER, PORT)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -37,7 +37,7 @@ def receive() -> None:
                 break
             f.write(bytes_read)
             progress.update(len(bytes_read))
-    client.close()
+    
 
 
 def send(msg: str) -> None:
@@ -50,10 +50,12 @@ def send(msg: str) -> None:
     client.send(message)
 
 
-def run_send_receive() -> None:
-    send("SEND_DATA")
-    receive()
-    time.sleep(5)
+def run_send_receive(filenames: list) -> None:
+    for filename in filenames:
+        send(filename)
+        receive()
+        time.sleep(1)
+    client.close()
 
 
 def dataframe_to_array(path: str) -> np.ndarray:
@@ -68,7 +70,9 @@ def dataframe_to_array(path: str) -> np.ndarray:
 
 if __name__ == "__main__":
     csv_path = "data.csv"
-    run_send_receive()
+    
+    filenames = ["./data/data.csv", "./data/data1.csv"]
+    run_send_receive(filenames)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--forecast", action="store_true",

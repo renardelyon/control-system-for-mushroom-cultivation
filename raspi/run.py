@@ -4,7 +4,6 @@ from get_data_inference import GetDataInference
 import os
 import time
 import datetime
-import concurrent.futures
 
 import tensorflow as tf
 import numpy as np

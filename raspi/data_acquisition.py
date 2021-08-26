@@ -41,5 +41,7 @@ def data_acquisition(start_time:float, file_names:list) -> None:
 if __name__ == "__main__":
 	get_inference = GetDataInference([0x8, 0x9], 0x7, 0x1, 'Training Data.csv')
 	startTime = time.time()
-	data_acquisition(startTime)
+    
+    file_names = ['data.csv', 'data1.csv']
+	data_acquisition(startTime, file_names)
 	
