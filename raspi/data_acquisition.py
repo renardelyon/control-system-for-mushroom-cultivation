@@ -22,7 +22,7 @@ def data_acquisition(start_time:float, file_names:list) -> None:
 	while True:
 		endTime = time.time()
 		delta = endTime-startTime
-		
+
 		request = get_inference.request_reading()
         for i, path in enumerate(csv_path):
             print(str(request.get('date')[i]), "date", 
@@ -36,10 +36,10 @@ def data_acquisition(start_time:float, file_names:list) -> None:
                                 + str(request.get('date')[i]) + "," 
                                 + str(request.get('humidity')[i]) + ","
                                 + str(request.get('temp')[i]) + "\n")
-		time.sleep(20)
+        time.sleep(1800)
 
 if __name__ == "__main__":
-	get_inference = GetDataInference([0x8, 0x9], 0x7, 0x1, 'Data Fan Humidifier.csv')
+	get_inference = GetDataInference([0x8, 0x9], 0x7, 0x1, 'Training Data.csv')
 	startTime = time.time()
 	data_acquisition(startTime)
 	
