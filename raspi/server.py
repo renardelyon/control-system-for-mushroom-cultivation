@@ -30,7 +30,7 @@ def handle_client(conn, addr):
         filename = conn.recv(msg_length).decode("utf-8")
         filesize = os.path.getsize(filename)
         
-        print("[{}] {}".format(addr, msg))
+        print("[{}] {}".format(addr, filename))
 
         conn.send("{}{}{}".format(filename, SEPARATOR, filesize).encode())
 
