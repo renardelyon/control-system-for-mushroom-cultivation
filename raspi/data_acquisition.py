@@ -1,9 +1,14 @@
 import os	
 import time
+import argparse
 
 from get_data_inference import GetDataInference
 
-def data_acquisition(start_time:float, data_dir:str, file_names:list, get_inference:object) -> None:
+def data_acquisition(start_time:float, 
+			data_dir:str,
+			file_names:list,
+			get_inference:object,
+			sleep_time:int) -> None:
 	""" Store data that has been logged by the sensor in csv format
 	
 		start_time: initial time when the function is executed
@@ -33,7 +38,7 @@ def data_acquisition(start_time:float, data_dir:str, file_names:list, get_infere
                                 + str(request.get('date')[i]) + "," 
                                 + str(round(request.get('humidity')[i],2)) + ","
                                 + str(request.get('temp')[i]) + "\n")
-		time.sleep(30)
+		time.sleep(sleep_time)
 
 if __name__ == "__main__":
 	addr_sensor = [0x8, 0x9]
@@ -42,7 +47,23 @@ if __name__ == "__main__":
 	data_dir = "./data"
 	data_training = "Training Data.csv"
 	
-	get_inference = GetDataInference(addr_sensor, addr_actuator, addr_cmd, data_training)
+	parser = argparse.ArgumentParser()
+	parser.add_argument("time",
+			      help="How much time needed between each sensor signal acquisition",
+			      default=-1,
+			      type=int)
+	args = parser.parse_args()
+	
+	if args.time > 0:
+		sleep_time = args.time
+	else:
+		parser.error("There is no argument passed or passed argument had a value < 0")
+		
+	get_inference = GetDataInference(addr_sensor,
+					addr_actuator,
+					addr_cmd,
+					data_training,
+					sleep_time)
 	startTime = time.time()
     
 	file_names = ['data.csv', 'data1.csv']
