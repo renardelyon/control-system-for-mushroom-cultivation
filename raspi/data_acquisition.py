@@ -58,14 +58,17 @@ if __name__ == "__main__":
 		sleep_time = args.time
 	else:
 		parser.error("There is no argument passed or passed argument had a value < 0")
-		
+	
 	get_inference = GetDataInference(addr_sensor,
 					addr_actuator,
 					addr_cmd,
-					data_training,
-					sleep_time)
+					data_training)
 	startTime = time.time()
     
 	file_names = ['data.csv', 'data1.csv']
-	data_acquisition(startTime, data_dir, file_names, get_inference)
+	data_acquisition(startTime, 
+			  data_dir,
+			  file_names,
+			  get_inference,
+			  sleep_time)
 	

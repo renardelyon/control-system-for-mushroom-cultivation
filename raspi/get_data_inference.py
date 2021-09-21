@@ -68,5 +68,11 @@ class GetDataInference:
 	
 	def write_to_arduino(self, preds:list):
 		""" Send prediction data to Arduino through I2C communication"""
-		self.bus.write_i2c_block_data(self.addr_receive, self.addr_cmd, preds)
+		try:
+			self.bus.write_i2c_block_data(self.addr_receive, 
+											self.addr_cmd, 
+											preds)
+		except:
+			print("Remote I/O Error")
+			
 		return -1
