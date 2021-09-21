@@ -2,7 +2,7 @@
 #include <DHT.h>
 #include <DHT_U.h>
 
-#define DHTPIN A0
+#define DHTPIN 10
 #define DHTTYPE DHT22
 #define SLAVE_ADDRESS 0x8
 #define FLOATS_SENT 2
